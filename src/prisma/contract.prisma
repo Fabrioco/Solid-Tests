@@ -1,0 +1,46 @@
+// use prisma-8
+enum CustomerType {
+  REGULAR
+  VIP
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+enum PaymentMethodType {
+  PIX
+  CARD
+  BOLETO
+}
+
+model Order {
+  id            Int               @id @default(autoincrement())
+  customerEmail String
+  customerType  CustomerType      @default(REGULAR)
+  couponCode    String?
+  paymentMethod PaymentMethodType
+  status        OrderStatus       @default(PENDING)
+  subtotalCents Int
+  discountCents Int               @default(0)
+  feeCents      Int               @default(0)
+  totalCents    Int
+  items         OrderItem[]
+  createdAt     DateTime          @default(now())
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         Int    @id @default(autoincrement())
+  order      Order  @relation(fields: [orderId], references: [id])
+  orderId    Int
+  name       String
+  priceCents Int
+  quantity   Int
+
+  @@map("order_items")
+}
+
